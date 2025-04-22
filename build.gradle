@@ -3,7 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'dev.alphagame.trailblazer'
+group = 'dev.alphagame'
 version = '1.0.0'
 
 // java version 17
