@@ -6,17 +6,6 @@ plugins {
 group = 'dev.alphagame'
 version = '1.0.0'
 
-task copyMavenToPages(type: Copy) {
-    dependsOn publishGitHubPages
-    from "${buildDir}/repo"
-    into "${rootDir}/maven-repo"
-}
-
-tasks.register("publishGitHubPages") {
-    dependsOn "publishGprPublicationToGitHubPagesRepository"
-}
-
-
 
 java {
     withJavadocJar()
@@ -59,4 +48,16 @@ publishing {
             version = version
         }
     }
+}
+
+// Create a wrapper task to publish to GitHub Pages repo
+tasks.register("publishToPages") {
+    dependsOn "publishGprPublicationToGitHubPagesRepository"
+}
+
+// Copy build/repo into root maven-repo/ directory
+tasks.register("copyMavenToPages", Copy) {
+    dependsOn "publishToPages"
+    from "${buildDir}/repo"
+    into "${rootDir}/maven-repo"
 }
