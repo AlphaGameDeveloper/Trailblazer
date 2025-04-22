@@ -6,7 +6,16 @@ plugins {
 group = 'dev.alphagame'
 version = '1.0.0'
 
-// java version 17
+task copyMavenToPages(type: Copy) {
+    dependsOn publishGitHubPages
+    from "${buildDir}/repo"
+    into "${rootDir}/maven-repo"
+}
+
+tasks.register("publishGitHubPages") {
+    dependsOn "publishGprPublicationToGitHubPagesRepository"
+}
+
 
 
 java {
@@ -25,6 +34,7 @@ dependencies {
 
 publishing {
     repositories {
+        // 🔐 GitHub Packages
         maven {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/AlphaGameDeveloper/Trailblazer")
@@ -33,7 +43,14 @@ publishing {
                 password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
             }
         }
+
+        // 🌐 GitHub Pages (static Maven repo)
+        maven {
+            name = "GitHubPages"
+            url = layout.buildDirectory.dir("repo").get().toURI() // goes to build/repo
+        }
     }
+
     publications {
         gpr(MavenPublication) {
             from components.java
