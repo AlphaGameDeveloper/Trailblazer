@@ -36,7 +36,7 @@ publishing {
         // 🌐 GitHub Pages (static Maven repo)
         maven {
             name = "GitHubPages"
-            url = layout.buildDirectory.dir("repo").get().toURI() // goes to build/repo
+            url = layout.buildDirectory.dir("repo").get().asFile.toURI()
         }
     }
 
