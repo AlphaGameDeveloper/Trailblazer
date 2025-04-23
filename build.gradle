@@ -99,6 +99,7 @@ tasks.register("publishSnapshotToReposilite") {
 // Helper function to determine the version dynamically
 def determineSnapshotVersion() {
     def gitCommitId = 'unknown'
+    def latestTag = System.getenv("GIT_TAG") ?: 'unknown'
     try {
         def stdout = new ByteArrayOutputStream()
         exec {
@@ -106,16 +107,16 @@ def determineSnapshotVersion() {
             standardOutput = stdout
         }
         gitCommitId = stdout.toString().trim()
+
+        def stdoutTag = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags', '--abbrev=0'
+            standardOutput = stdoutTag
+        }
+        latestTag = stdoutTag.toString().trim()
     } catch (Exception ignored) {
-        // Fallback to 'unknown' if Git is unavailable
+        // Fallback to environment variable if Git is unavailable
     }
-    // get latest tag id
-    def stdoutTag = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'describe', '--tags', '--abbrev=0'
-        standardOutput = stdoutTag
-    }
-    def latestTag = stdoutTag.toString().trim()
     return "${latestTag}-${gitCommitId}-SNAPSHOT"
 }
 
