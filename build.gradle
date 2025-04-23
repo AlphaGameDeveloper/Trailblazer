@@ -42,7 +42,7 @@ publishing {
         // local reposilite
         maven {
             name = "Reposilite"
-            url = uri("http://maven.alphagame.dev/releases")
+            url = uri("https://maven.alphagame.dev/releases")
             credentials {
                 username = project.findProperty("reposilite.user") ?: System.getenv("REPOSILITE_USER")
                 password = project.findProperty("reposilite.key") ?: System.getenv("REPOSILITE_PASSWORD")
