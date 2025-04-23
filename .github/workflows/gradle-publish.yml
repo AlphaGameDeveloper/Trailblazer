@@ -49,6 +49,15 @@ jobs:
           name: maven-pages
           path: maven-repo
 
+      - name: Generate Javadoc
+        run: ./gradlew javadoc
+
+      - name: Upload Javadoc
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadoc-html
+          path: build/docs/javadoc
+
   deploy-pages:
     needs: build
     runs-on: ubuntu-latest
@@ -63,11 +72,25 @@ jobs:
         with:
           name: maven-pages
           path: maven-repo
-  
+
+      - name: Copy Javadoc HTML from previous job
+        uses: actions/download-artifact@v4
+        with:
+          name: javadoc-html
+          path: javadoc
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./maven-repo
+          publish_branch: gh-pages
+          keep_files: true
+
+      - name: Deploy Javadoc to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./javadoc
           publish_branch: gh-pages
           keep_files: true
