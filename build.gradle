@@ -4,8 +4,7 @@ plugins {
 }
 
 group = 'dev.alphagame'
-version = '1.0.0'
-
+version = determineVersion()
 
 java {
     withJavadocJar()
@@ -39,10 +38,20 @@ publishing {
             url = layout.buildDirectory.dir("repo").get().asFile.toURI()
         }
         
-        // local reposilite
+        // local reposilite (releases)
         maven {
             name = "Reposilite"
             url = uri("https://maven.alphagame.dev/releases")
+            credentials {
+                username = project.findProperty("reposilite.user") ?: System.getenv("REPOSILITE_USER")
+                password = project.findProperty("reposilite.key") ?: System.getenv("REPOSILITE_PASSWORD")
+            }
+        }
+
+        // local reposilite (snapshots)
+        maven {
+            name = "ReposiliteSnapshots"
+            url = uri("https://maven.alphagame.dev/snapshots")
             credentials {
                 username = project.findProperty("reposilite.user") ?: System.getenv("REPOSILITE_USER")
                 password = project.findProperty("reposilite.key") ?: System.getenv("REPOSILITE_PASSWORD")
@@ -52,6 +61,13 @@ publishing {
 
     publications {
         gpr(MavenPublication) {
+            from components.java
+            groupId = group
+            artifactId = 'trailblazer'
+            version = version
+        }
+
+        snapshot(MavenPublication) {
             from components.java
             groupId = group
             artifactId = 'trailblazer'
@@ -72,6 +88,23 @@ tasks.register("copyMavenToPages", Copy) {
     into "${rootDir}/maven-repo"
 }
 
-tasks.register("publishToReposilite") {
-    dependsOn "publishGprPublicationToReposiliteRepository"
+// Task to publish snapshot releases to Reposilite
+tasks.register("publishSnapshotToReposilite") {
+    dependsOn "publishSnapshotPublicationToReposiliteSnapshotsRepository"
+}
+
+// Helper function to determine the version dynamically
+def determineVersion() {
+    def gitCommitId = 'unknown'
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-parse', '--short', 'HEAD'
+            standardOutput = stdout
+        }
+        gitCommitId = stdout.toString().trim()
+    } catch (Exception ignored) {
+        // Fallback to 'unknown' if Git is unavailable
+    }
+    return "${project.version}-${gitCommitId}-SNAPSHOT"
 }
