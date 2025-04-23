@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    // Add any dependencies your logger might use, e.g., SLF4J, Log4j
+    implementation 'org.json:json:20210307'
 }
 
 publishing {
