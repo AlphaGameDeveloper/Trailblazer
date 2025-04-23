@@ -7,12 +7,7 @@ group = 'dev.alphagame'
 
 // version is latest tag
 // get latest git tag
-def stdout = new ByteArrayOutputStream()
-exec {
-    commandLine 'git', 'describe', '--tags', '--abbrev=0'
-    standardOutput = stdout
-}
-def version = stdout.toString().trim()
+version = "1.0.0"
 
 java {
     withJavadocJar()
@@ -122,4 +117,11 @@ def determineSnapshotVersion() {
     }
     def latestTag = stdoutTag.toString().trim()
     return "${latestTag}-${gitCommitId}-SNAPSHOT"
+}
+
+tasks.register("showVersion") {
+    doLast {
+        println "Current version: ${version}"
+        println "Snapshot version: ${determineSnapshotVersion()}"
+    }
 }
