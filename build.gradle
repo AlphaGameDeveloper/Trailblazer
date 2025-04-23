@@ -4,7 +4,15 @@ plugins {
 }
 
 group = 'dev.alphagame'
-version = determineVersion()
+
+// version is latest tag
+// get latest git tag
+def stdout = new ByteArrayOutputStream()
+exec {
+    commandLine 'git', 'describe', '--tags', '--abbrev=0'
+    standardOutput = stdout
+}
+def version = stdout.toString().trim()
 
 java {
     withJavadocJar()
@@ -71,7 +79,7 @@ publishing {
             from components.java
             groupId = group
             artifactId = 'trailblazer'
-            version = version
+            version = determineSnapshotVersion()
         }
     }
 }
@@ -94,7 +102,7 @@ tasks.register("publishSnapshotToReposilite") {
 }
 
 // Helper function to determine the version dynamically
-def determineVersion() {
+def determineSnapshotVersion() {
     def gitCommitId = 'unknown'
     try {
         def stdout = new ByteArrayOutputStream()
@@ -106,5 +114,12 @@ def determineVersion() {
     } catch (Exception ignored) {
         // Fallback to 'unknown' if Git is unavailable
     }
-    return "${project.version}-${gitCommitId}-SNAPSHOT"
+    // get latest tag id
+    def stdoutTag = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--abbrev=0'
+        standardOutput = stdoutTag
+    }
+    def latestTag = stdoutTag.toString().trim()
+    return "${latestTag}-${gitCommitId}-SNAPSHOT"
 }
