@@ -37,6 +37,8 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSILITE_USER: ${{ secrets.REPOSILITE_USER }}
+          REPOSILITE_PASSWORD: ${{ secrets.REPOSILITE_PASSWORD }}
 
       - name: Publish Maven repo for GitHub Pages
         run: ./gradlew publishToMavenLocal copyMavenToPages
