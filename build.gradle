@@ -178,7 +178,7 @@ tasks.javadoc {
         header = "Trailblazer ${displayVersion}"
     }
     doLast {
-        def versionedDir = file("${buildDir}/docs/javadoc/${displayVersion}")
+        def versionedDir = file("${buildDir}/docs/javadoc/")
         copy {
             from destinationDir
             into versionedDir
