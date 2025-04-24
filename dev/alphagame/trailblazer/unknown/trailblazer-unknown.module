@@ -1,0 +1,109 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "dev.alphagame",
+    "module": "trailblazer",
+    "version": "unknown",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.6"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "trailblazer-unknown.jar",
+          "url": "trailblazer-unknown.jar",
+          "size": 5786,
+          "sha512": "28fe823ee94dae50468deb1e912d0e9633fede20aea0e72257fbae16daaaf29cb7b3a901276c5dcefbc5758f3fcfa43030d5766bc4ed39a6bba0f13017fa4055",
+          "sha256": "e92daacd284eb0058141e9f94f2fa601ffa2f8878ea5b0023d930ec4aa08bb4f",
+          "sha1": "ce3214d3b7b845d2a0b4d5e56c888fdd31d76c9f",
+          "md5": "cf527f481b84eddf54ad7d0b78acb935"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.json",
+          "module": "json",
+          "version": {
+            "requires": "20210307"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "trailblazer-unknown.jar",
+          "url": "trailblazer-unknown.jar",
+          "size": 5786,
+          "sha512": "28fe823ee94dae50468deb1e912d0e9633fede20aea0e72257fbae16daaaf29cb7b3a901276c5dcefbc5758f3fcfa43030d5766bc4ed39a6bba0f13017fa4055",
+          "sha256": "e92daacd284eb0058141e9f94f2fa601ffa2f8878ea5b0023d930ec4aa08bb4f",
+          "sha1": "ce3214d3b7b845d2a0b4d5e56c888fdd31d76c9f",
+          "md5": "cf527f481b84eddf54ad7d0b78acb935"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "trailblazer-unknown-javadoc.jar",
+          "url": "trailblazer-unknown-javadoc.jar",
+          "size": 5773,
+          "sha512": "5c85a4f2c432ed8186b3f1e9ed6df6948cd3edfd37fa8a0305fd6a65014ddacf6ea35a73fbcdb3914015ba5537a369ec55264f266b267fc16a81e17d4b6a96d1",
+          "sha256": "1457f887f41df8328a59871dbe4cffc1e567080b138d9c8f309bb6aa10ae729a",
+          "sha1": "658cf29bbb63e9a60868501967206d11bcbe6b28",
+          "md5": "c7757a91933d79cc080eb553e4f4c86b"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "trailblazer-unknown-sources.jar",
+          "url": "trailblazer-unknown-sources.jar",
+          "size": 4624,
+          "sha512": "2ff98131251d6621ee1c3fc38bab1068549d8ab9a398a44fede74d1b09fff0c4fab3f7fbd91fb5781db48ccbbc2be30893b65122986160dffbd124133a70086b",
+          "sha256": "5860aa53166ab543dcba335c99f043fe00c2352629450d4614970e5d05643dfa",
+          "sha1": "94c6c9f52f0dbfcfdbaa8c2f1646fc4758da9850",
+          "md5": "3a0fe5d2c3e90de6ff4abb8d85280b17"
+        }
+      ]
+    }
+  ]
+}
