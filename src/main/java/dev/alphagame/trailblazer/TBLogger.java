@@ -157,6 +157,76 @@ public class TBLogger {
             }
         }
     }
+    
+    /**
+     * Logs an exception with the ERROR level.
+     *
+     * @param message The message to log.
+     * @param throwable The exception to log.
+     */
+    public void error(String message, Throwable throwable) {
+        if (this.logLevel.getLevel() <= LogLevel.ERROR.getLevel()) {
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("ERROR", loggerName, message + " - " + throwable.toString());
+            }
+        }
+    }
+    
+    /**
+     * Logs an exception with the WARN level.
+     *
+     * @param message The message to log.
+     * @param throwable The exception to log.
+     */
+    public void warn(String message, Throwable throwable) {
+        if (this.logLevel.getLevel() <= LogLevel.WARN.getLevel()) {
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("WARN", loggerName, message + " - " + throwable.toString());
+            }
+        }
+    }
+    
+    /**
+     * Logs an exception with the INFO level.
+     *
+     * @param message The message to log.
+     * @param throwable The exception to log.
+     */
+    public void info(String message, Throwable throwable) {
+        if (this.logLevel.getLevel() <= LogLevel.INFO.getLevel()) {
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("INFO", loggerName, message + " - " + throwable.toString());
+            }
+        }
+    }
+    
+    /**
+     * Logs an exception with the DEBUG level.
+     *
+     * @param message The message to log.
+     * @param throwable The exception to log.
+     */
+    public void debug(String message, Throwable throwable) {
+        if (this.logLevel.getLevel() <= LogLevel.DEBUG.getLevel()) {
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("DEBUG", loggerName, message + " - " + throwable.toString());
+            }
+        }
+    }
+    
+    /**
+     * Logs an exception with the FATAL level.
+     *
+     * @param message The message to log.
+     * @param throwable The exception to log.
+     */
+    public void fatal(String message, Throwable throwable) {
+        if (this.logLevel.getLevel() <= LogLevel.FATAL.getLevel()) {
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("FATAL", loggerName, message + " - " + throwable.toString());
+            }
+        }
+    }
 
     /**
      * Checks if DEBUG level is enabled for this logger.
