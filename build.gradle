@@ -33,7 +33,7 @@ dependencies {
 tasks.register('runExample', JavaExec) {
     dependsOn compileTestJava
     classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
-    mainClass = 'dev.alphagame.trailblazer.TrailblazerExample'
+    mainClass = 'dev.alphagame.trailblazer.QuickTest'
 }
 
 publishing {
