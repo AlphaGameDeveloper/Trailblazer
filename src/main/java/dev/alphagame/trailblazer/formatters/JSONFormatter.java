@@ -6,54 +6,59 @@
 package dev.alphagame.trailblazer.formatters;
 
 import org.json.JSONObject;
+import java.io.PrintStream;
 
 public class JSONFormatter extends AbstractFormatter {
     public JSONFormatter() {
         super();
-    };
-
-    /**
-     * Formats a log message with the given level, message, and arguments into JSON format.
-     *
-     * @param level   The log level.
-     * @param message The log message.
-     * @param args    The arguments to format the message with.
-     */
-    public void formatLogMessage(String level, String message, Object... args) {
-        String formattedMessage = String.format(message, args);
-        // Create a JSON object with the log details
-        // make a json object with the following fields:
-        // - "level": the log level
-        // - "message": the formatted message
-        // - "timestamp": the current timestamp
-
-        JSONObject json = new JSONObject();
-        json.put("level", level);
-        json.put("message", formattedMessage);
-        json.put("timestamp", System.currentTimeMillis());
-        json.put("varargs", args);
-
-        System.out.println(json.toString());
+    }
+    
+    public JSONFormatter(PrintStream outputStream) {
+        super(outputStream);
     }
 
     /**
-     * Formats a log message with the given level and message into JSON format.
+     * Formats a log message with the given level, logger name, message, and arguments into JSON format.
      *
      * @param level   The log level.
+     * @param loggerName The name of the logger.
      * @param message The log message.
+     * @param args    The arguments to format the message with.
      */
-    public void formatLogMessage(String level, String message) {
+    @Override
+    public void formatLogMessage(String level, String loggerName, String message, Object... args) {
+        String formattedMessage = String.format(message, args);
         // Create a JSON object with the log details
-        // make a json object with the following fields:
-        // - "level": the log level
-        // - "message": the formatted message
-        // - "timestamp": the current timestamp
 
         JSONObject json = new JSONObject();
         json.put("level", level);
+        json.put("logger", loggerName);
+        json.put("message", formattedMessage);
+        json.put("timestamp", System.currentTimeMillis());
+        if (args.length > 0) {
+            json.put("args", args);
+        }
+
+        outputStream.println(json.toString());
+    }
+
+    /**
+     * Formats a log message with the given level, logger name, and message into JSON format.
+     *
+     * @param level   The log level.
+     * @param loggerName The name of the logger.
+     * @param message The log message.
+     */
+    @Override
+    public void formatLogMessage(String level, String loggerName, String message) {
+        // Create a JSON object with the log details
+
+        JSONObject json = new JSONObject();
+        json.put("level", level);
+        json.put("logger", loggerName);
         json.put("message", message);
         json.put("timestamp", System.currentTimeMillis());
 
-        System.out.println(json.toString());
+        outputStream.println(json.toString());
     }
 }

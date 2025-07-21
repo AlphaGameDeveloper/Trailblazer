@@ -1,9 +1,14 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'application'
 }
 
 group = 'dev.alphagame'
+
+application {
+    mainClassName = 'dev.alphagame.trailblazer.TrailblazerExample'
+}
 
 // version is latest tag
 // get latest git tag
@@ -12,7 +17,8 @@ println("Version: ${version}")
 java {
     withJavadocJar()
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 repositories {
@@ -21,6 +27,13 @@ repositories {
 
 dependencies {
     implementation 'org.json:json:20210307'
+}
+
+// Task to run the example
+tasks.register('runExample', JavaExec) {
+    dependsOn compileTestJava
+    classpath = sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+    mainClass = 'dev.alphagame.trailblazer.TrailblazerExample'
 }
 
 publishing {

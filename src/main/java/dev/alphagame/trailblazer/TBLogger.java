@@ -2,12 +2,13 @@
 // 
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
+
 package dev.alphagame.trailblazer;
 
 public class TBLogger {
     private final String loggerName;
-    private LogLevel logLevel;
-    private LoggerConfiguration configuration;
+    private volatile LogLevel logLevel;
+    private volatile LoggerConfiguration configuration;
 
     public TBLogger(String name, LoggerConfiguration configuration) {
         this.loggerName = name;
@@ -30,7 +31,9 @@ public class TBLogger {
      */
     public void info(String message, Object... args) {
         if (this.logLevel.getLevel() <= LogLevel.INFO.getLevel()) {
-            configuration.formatter.formatLogMessage("INFO", message, args);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("INFO", loggerName, message, args);
+            }
         }
     }
 
@@ -41,7 +44,9 @@ public class TBLogger {
      */
     public void info(String message) {
         if (this.logLevel.getLevel() <= LogLevel.INFO.getLevel()) {
-            configuration.formatter.formatLogMessage("INFO", message);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("INFO", loggerName, message);
+            }
         }
     }
 
@@ -53,7 +58,9 @@ public class TBLogger {
      */
     public void debug(String message, Object... args) {
         if (this.logLevel.getLevel() <= LogLevel.DEBUG.getLevel()) {
-            configuration.formatter.formatLogMessage("DEBUG", message, args);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("DEBUG", loggerName, message, args);
+            }
         }
     }
 
@@ -64,7 +71,9 @@ public class TBLogger {
      */
     public void debug(String message) {
         if (this.logLevel.getLevel() <= LogLevel.DEBUG.getLevel()) {
-            configuration.formatter.formatLogMessage("DEBUG", message);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("DEBUG", loggerName, message);
+            }
         }
     }
 
@@ -76,7 +85,9 @@ public class TBLogger {
      */
     public void warn(String message, Object... args) {
         if (this.logLevel.getLevel() <= LogLevel.WARN.getLevel()) {
-            configuration.formatter.formatLogMessage("WARN", message, args);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("WARN", loggerName, message, args);
+            }
         }
     }
 
@@ -87,7 +98,9 @@ public class TBLogger {
      */
     public void warn(String message) {
         if (this.logLevel.getLevel() <= LogLevel.WARN.getLevel()) {
-            configuration.formatter.formatLogMessage("WARN", message);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("WARN", loggerName, message);
+            }
         }
     }
 
@@ -99,7 +112,9 @@ public class TBLogger {
      */
     public void error(String message, Object... args) {
         if (this.logLevel.getLevel() <= LogLevel.ERROR.getLevel()) {
-            configuration.formatter.formatLogMessage("ERROR", message, args);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("ERROR", loggerName, message, args);
+            }
         }
     }
 
@@ -110,7 +125,9 @@ public class TBLogger {
      */
     public void error(String message) {
         if (this.logLevel.getLevel() <= LogLevel.ERROR.getLevel()) {
-            configuration.formatter.formatLogMessage("ERROR", message);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("ERROR", loggerName, message);
+            }
         }
     }
 
@@ -122,7 +139,9 @@ public class TBLogger {
      */
     public void fatal(String message, Object... args) {
         if (this.logLevel.getLevel() <= LogLevel.FATAL.getLevel()) {
-            configuration.formatter.formatLogMessage("FATAL", message, args);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("FATAL", loggerName, message, args);
+            }
         }
     }
 
@@ -133,8 +152,55 @@ public class TBLogger {
      */
     public void fatal(String message) {
         if (this.logLevel.getLevel() <= LogLevel.FATAL.getLevel()) {
-            configuration.formatter.formatLogMessage("FATAL", message);
+            synchronized (configuration.formatter) {
+                configuration.formatter.formatLogMessage("FATAL", loggerName, message);
+            }
         }
+    }
+
+    /**
+     * Checks if DEBUG level is enabled for this logger.
+     *
+     * @return true if DEBUG level is enabled.
+     */
+    public boolean isDebugEnabled() {
+        return this.logLevel.getLevel() <= LogLevel.DEBUG.getLevel();
+    }
+
+    /**
+     * Checks if INFO level is enabled for this logger.
+     *
+     * @return true if INFO level is enabled.
+     */
+    public boolean isInfoEnabled() {
+        return this.logLevel.getLevel() <= LogLevel.INFO.getLevel();
+    }
+
+    /**
+     * Checks if WARN level is enabled for this logger.
+     *
+     * @return true if WARN level is enabled.
+     */
+    public boolean isWarnEnabled() {
+        return this.logLevel.getLevel() <= LogLevel.WARN.getLevel();
+    }
+
+    /**
+     * Checks if ERROR level is enabled for this logger.
+     *
+     * @return true if ERROR level is enabled.
+     */
+    public boolean isErrorEnabled() {
+        return this.logLevel.getLevel() <= LogLevel.ERROR.getLevel();
+    }
+
+    /**
+     * Checks if FATAL level is enabled for this logger.
+     *
+     * @return true if FATAL level is enabled.
+     */
+    public boolean isFatalEnabled() {
+        return this.logLevel.getLevel() <= LogLevel.FATAL.getLevel();
     }
 
     /**
@@ -144,6 +210,7 @@ public class TBLogger {
      */
     public void setLogLevel(LogLevel logLevel) {
         this.logLevel = logLevel;
+        this.configuration.logLevel = logLevel;
     }
 
     /**
@@ -171,5 +238,15 @@ public class TBLogger {
      */
     public LoggerConfiguration getConfiguration() {
         return configuration;
+    }
+
+    /**
+     * Sets the configuration for this logger.
+     *
+     * @param configuration The new configuration.
+     */
+    public void setConfiguration(LoggerConfiguration configuration) {
+        this.configuration = configuration;
+        this.logLevel = configuration.logLevel;
     }
 }

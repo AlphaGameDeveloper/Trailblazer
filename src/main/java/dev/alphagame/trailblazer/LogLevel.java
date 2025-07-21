@@ -8,7 +8,7 @@ package dev.alphagame.trailblazer;
 /**
  * Enumeration of log levels.
  */
-enum LogLevel {
+public enum LogLevel {
     DEBUG(0),
     INFO(1),
     WARN(2),
