@@ -1,4 +1,4 @@
-# This workflow builds with Gradle, publishes to GitHub Packages, and deploys Maven artifacts to GitHub Pages
+# This workflow builds with Gradle, publishes to GitHub Packages, and deploys Maven artifacts and documentation to GitHub Pages
 
 name: Gradle Package
 
@@ -40,57 +40,88 @@ jobs:
           REPOSILITE_USER: ${{ secrets.REPOSILITE_USER }}
           REPOSILITE_PASSWORD: ${{ secrets.REPOSILITE_PASSWORD }}
 
-      - name: Publish Maven repo for GitHub Pages
-        run: ./gradlew publishToMavenLocal copyMavenToPages
-
-      - name: Upload Maven repo for GitHub Pages
-        uses: actions/upload-artifact@v4
-        with:
-          name: maven-pages
-          path: maven-repo
+      - name: Generate Maven repository for GitHub Pages
+        run: ./gradlew publishToPages copyMavenToPages
 
       - name: Generate Javadoc
         run: ./gradlew javadoc
 
-      - name: Upload Javadoc
+      - name: Create GitHub Pages directory structure
+        run: |
+          mkdir -p gh-pages-content
+          # Copy Maven repository to root of gh-pages
+          cp -r maven-repo/* gh-pages-content/
+          # Copy Javadoc to docs/ subdirectory
+          mkdir -p gh-pages-content/docs
+          cp -r build/docs/javadoc/* gh-pages-content/docs/
+          # Create index.html for easier navigation
+          cat > gh-pages-content/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Trailblazer - Maven Repository and Documentation</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 40px; }
+              .container { max-width: 800px; }
+              .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0; }
+              .card h2 { margin-top: 0; color: #333; }
+              .card a { color: #0066cc; text-decoration: none; }
+              .card a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🚀 Trailblazer</h1>
+              <p>Welcome to the Trailblazer Maven repository and documentation site.</p>
+              
+              <div class="card">
+                <h2>📚 API Documentation</h2>
+                <p>Browse the latest Javadoc documentation for the Trailblazer library.</p>
+                <a href="docs/">View Documentation →</a>
+              </div>
+              
+              <div class="card">
+                <h2>📦 Maven Repository</h2>
+                <p>Maven artifacts are available in this repository. Add this repository to your project:</p>
+                <pre><code>&lt;repository&gt;
+            &lt;id&gt;trailblazer-gh-pages&lt;/id&gt;
+            &lt;url&gt;https://alphagamedeveloper.github.io/Trailblazer/&lt;/url&gt;
+          &lt;/repository&gt;</code></pre>
+                <a href="dev/">Browse Repository →</a>
+              </div>
+            </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload GitHub Pages content
         uses: actions/upload-artifact@v4
         with:
-          name: javadoc-html
-          path: build/docs/javadoc
+          name: gh-pages-content
+          path: gh-pages-content
 
   deploy-pages:
     needs: build
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Needed for GitHub Pages deployment
+      contents: write
+      pages: write
+      id-token: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy built Maven repo from previous job
+      - name: Download GitHub Pages content
         uses: actions/download-artifact@v4
         with:
-          name: maven-pages
-          path: maven-repo
-
-      - name: Copy Javadoc HTML from previous job
-        uses: actions/download-artifact@v4
-        with:
-          name: javadoc-html
-          path: javadoc
+          name: gh-pages-content
+          path: gh-pages-content
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./maven-repo
+          publish_dir: ./gh-pages-content
           publish_branch: gh-pages
-          keep_files: true
-
-      - name: Deploy Javadoc to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./javadoc
-          publish_branch: gh-pages
-          keep_files: true
+          force_orphan: true
+          commit_message: "Deploy Maven repository and documentation for release"

@@ -37,12 +37,6 @@ jobs:
             GIT_TAG: ${{ steps.get-latest-tag.outputs.tag }}
             SNAPSHOT: true
 
-        - name: Upload Snapshot Javadoc
-          uses: actions/upload-artifact@v4
-          with:
-            name: snapshot-javadoc
-            path: build/docs/javadoc/SNAPSHOT
-
         - name: Publish snapshot to maven.alphagame.dev
           run: ./gradlew publishSnapshotToReposilite
           env:
@@ -53,25 +47,105 @@ jobs:
             GIT_TAG: ${{ steps.get-latest-tag.outputs.tag }}
             SNAPSHOT: true
 
+        - name: Upload Snapshot Javadoc
+          uses: actions/upload-artifact@v4
+          with:
+            name: snapshot-javadoc
+            path: build/docs/javadoc/SNAPSHOT
+
     deploy-snapshot-docs:
         needs: upload-snapshot
         runs-on: ubuntu-latest
         permissions:
-          contents: write # Needed for GitHub Pages deployment
+          contents: write
+          pages: write
+          id-token: write
           
         steps:
         - uses: actions/checkout@v4
         
+        - name: Download existing gh-pages content
+          continue-on-error: true
+          run: |
+            # Try to clone the gh-pages branch to preserve existing content
+            git clone --single-branch --branch gh-pages https://github.com/${{ github.repository }}.git existing-pages || echo "No existing gh-pages branch found"
+            
         - name: Download Snapshot Javadoc
           uses: actions/download-artifact@v4
           with:
             name: snapshot-javadoc
-            path: javadoc/SNAPSHOT
+            path: snapshot-javadoc
             
-        - name: Deploy Snapshot Javadoc to GitHub Pages
+        - name: Prepare GitHub Pages content with snapshot docs
+          run: |
+            # Create the target directory
+            mkdir -p gh-pages-content
+            
+            # Copy existing content if available
+            if [ -d "existing-pages" ]; then
+              cp -r existing-pages/* gh-pages-content/ 2>/dev/null || echo "No existing content to copy"
+            fi
+            
+            # Ensure docs directory exists
+            mkdir -p gh-pages-content/docs
+            
+            # Copy snapshot documentation to docs/SNAPSHOT
+            mkdir -p gh-pages-content/docs/SNAPSHOT
+            cp -r snapshot-javadoc/* gh-pages-content/docs/SNAPSHOT/
+            
+            # Update or create index.html to include snapshot docs
+            cat > gh-pages-content/index.html << 'EOF'
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Trailblazer - Maven Repository and Documentation</title>
+              <style>
+                body { font-family: Arial, sans-serif; margin: 40px; }
+                .container { max-width: 800px; }
+                .card { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0; }
+                .card h2 { margin-top: 0; color: #333; }
+                .card a { color: #0066cc; text-decoration: none; }
+                .card a:hover { text-decoration: underline; }
+                .snapshot { border-left: 4px solid #ff9500; background-color: #fff8f0; }
+                .release { border-left: 4px solid #28a745; background-color: #f8fff8; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h1>🚀 Trailblazer</h1>
+                <p>Welcome to the Trailblazer Maven repository and documentation site.</p>
+                
+                <div class="card release">
+                  <h2>📚 Latest Release Documentation</h2>
+                  <p>Browse the latest stable Javadoc documentation for the Trailblazer library.</p>
+                  <a href="docs/">View Release Documentation →</a>
+                </div>
+
+                <div class="card snapshot">
+                  <h2>🔧 Snapshot Documentation</h2>
+                  <p>Browse the latest snapshot/development Javadoc documentation.</p>
+                  <a href="docs/SNAPSHOT/">View Snapshot Documentation →</a>
+                </div>
+                
+                <div class="card">
+                  <h2>📦 Maven Repository</h2>
+                  <p>Maven artifacts are available in this repository. Add this repository to your project:</p>
+                  <pre><code>&lt;repository&gt;
+              &lt;id&gt;trailblazer-gh-pages&lt;/id&gt;
+              &lt;url&gt;https://alphagamedeveloper.github.io/Trailblazer/&lt;/url&gt;
+            &lt;/repository&gt;</code></pre>
+                  <a href="dev/">Browse Repository →</a>
+                </div>
+              </div>
+            </body>
+            </html>
+            EOF
+            
+        - name: Deploy Snapshot Documentation to GitHub Pages
           uses: peaceiris/actions-gh-pages@v4
           with:
             github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_dir: ./javadoc
+            publish_dir: ./gh-pages-content
             publish_branch: gh-pages
             keep_files: true
+            commit_message: "Deploy snapshot documentation"

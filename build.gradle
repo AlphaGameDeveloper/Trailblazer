@@ -169,18 +169,20 @@ tasks.register("showVersion") {
 }
 
 tasks.javadoc {
-    include("dev/alphagame/trailblazer/**")
+    // Don't use include - let it process all source files
+    // The issue was the include pattern was filtering too restrictively
     
     // Prepare version string before configuring options
     def displayVersion = version.toString()
-    if (displayVersion == "false" || displayVersion == "null" || displayVersion == "undefined") {
+    if (displayVersion == "false" || displayVersion == "null" || displayVersion == "undefined" || displayVersion == "unknown") {
         displayVersion = determineSnapshotVersion()
     }
     
     options {
         encoding = 'UTF-8'
         charSet = 'UTF-8'
-        links("https://docs.oracle.com/en/java/javase/17/docs/api/")
+        // Use Java 8 docs since you're targeting Java 8 compatibility
+        links("https://docs.oracle.com/javase/8/docs/api/")
         
         // Explicitly set version information with safety checks
         windowTitle = "Trailblazer API ${displayVersion}"
@@ -189,14 +191,17 @@ tasks.javadoc {
         
         // Add a header with version information
         header = "Trailblazer ${displayVersion}"
+        
+        // Add more verbose output for debugging
+        verbose()
     }
-    doLast {
-        def versionedDir = file("${buildDir}/docs/javadoc/")
-        copy {
-            from destinationDir
-            into versionedDir
-        }
-    }
+    
+    // Configure the classpath to include dependencies
+    classpath = configurations.compileClasspath
+    source = sourceSets.main.allJava
+    destinationDir = file("${buildDir}/docs/javadoc")
+    
+    // Remove the problematic doLast block that was copying to the same location
 }
 
 // Task to copy Javadoc for SNAPSHOT versions
