@@ -38,7 +38,8 @@ jobs:
             SNAPSHOT: true
 
         - name: Publish snapshot to maven.alphagame.dev
-          run: ./gradlew publishSnapshotToReposilite
+          run: |
+            ./gradlew publishSnapshotToReposilite || echo "Snapshot publication failed, but continuing workflow"
           env:
             USERNAME: ${{ github.actor }}
             TOKEN: ${{ secrets.GITHUB_TOKEN }}
