@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"dev.alphagame.trailblazer"},{"l":"dev.alphagame.trailblazer.config"},{"l":"dev.alphagame.trailblazer.formatters"},{"l":"dev.alphagame.trailblazer.utils"}];updateSearchResults();
